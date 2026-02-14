@@ -1,24 +1,33 @@
-
-# PoHE Rhythm Protocol
-**Proof of Human Effort (PoHE)** is a decentralized anti-bot infrastructure designed for the Web3 ecosystem, specifically for the **Arbitrum Network**.
-
-## 🚀 The Concept
-Traditional CAPTCHAs are often bypassed by advanced AI and automated scripts. PoHE introduces a **Rhythm-based Verification** system. It analyzes the micro-timing (latency variance) between user interactions to distinguish between a human and a bot.
-
-### Why Rhythm?
-- **Bots:** Execute actions with perfect mathematical precision (e.g., exactly 500ms intervals).
-- **Humans:** Naturally have "imperfect" timing (e.g., 495ms, 512ms, 480ms).
-- **PoHE Logic:** Our algorithm detects this natural human variance. If the timing is too perfect, access is denied.
-
-## 🛠 Project Structure
-- `index.html`: The interactive front-end interface for the verification test.
-- `logic.js`: The core JavaScript engine that calculates tap latency and detects bots.
-- `README.md`: Project documentation and vision.
-
-## 📈 Future Roadmap
-- [ ] Integration with Smart Contracts on Arbitrum.
-- [ ] Multi-layered behavioral analysis.
-- [ ] On-chain proof of humanity rewards.
+# PoHE Rhythm Protocol 🚀
+**Proof of Human Existence (PoHE) via Behavioral Biometrics & Rhythmic Pattern Recognition.**
 
 ---
-*Developed by Rohan Islam (rohanislam967) for the Arbitrum Audit/Grant Program.*
+
+## 📌 Overview
+PoHE Rhythm Protocol is a next-generation anti-bot verification system designed for the Web3 ecosystem. Unlike traditional CAPTCHAs, it utilizes **Behavioral Biometrics** to distinguish between humans and automated scripts by analyzing the natural timing variance (rhythm) in human interactions.
+
+## ✨ Core Features
+- **Rhythmic Analysis:** Detects human-specific timing patterns with a precision threshold (currently 10ms variance).
+- **Anti-Bot Mechanism:** Automatically blocks perfectly consistent inputs (scripts/bots) and extreme speed anomalies.
+- **Audio Feedback:** Integrated real-time interaction feedback for a professional user experience.
+- **Web3 Ready:** Designed to integrate with Arbitrum Layer-2 for on-chain verification.
+
+## 🛠️ Tech Stack
+- **Frontend:** HTML5, CSS3 (Futuristic UI)
+- **Logic:** JavaScript (Behavioral Analysis Engine)
+- **Network (Future):** Arbitrum Sepolia Testnet
+
+## 🗺️ Roadmap
+- [x] **Phase 1:** Core Rhythm Logic & Basic UI
+- [ ] **Phase 2:** Device Motion Integration (Gyroscope/Accelerometer analysis)
+- [ ] **Phase 3:** Arbitrum Smart Contract Integration (On-chain Proof of Personhood)
+- [ ] **Phase 4:** Mainnet Deployment & Developer SDK
+
+## 🏗️ Technical Logic
+The protocol calculates the variance between consecutive interaction timestamps. 
+- If `Variance < 10ms` -> **Bot Detected** (Too perfect)
+- If `Average Gap < 200ms` -> **Suspicious Speed** (Script suspected)
+- Otherwise -> **Human Confirmed** (Natural rhythm)
+
+---
+*Developed as a prototype for secure, decentralized human verification.*
