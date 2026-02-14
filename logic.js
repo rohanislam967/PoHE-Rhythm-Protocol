@@ -1,118 +1,94 @@
-/**
- * PoHE Protocol: Multi-Layered Behavioral Verification
- * Layer 1: Rhythmic Pattern Analysis
- * Layer 2: Gyroscope-Based Physical Motion Recovery
- */
+const canvas = document.getElementById('dvtCanvas');
+const ctx = canvas.getContext('2d');
+const target = document.getElementById('trace-target');
+const statusMsg = document.getElementById('status-msg');
 
-let tapData = [];
-let isRecoveryActive = false;
-let sensorAttached = false;
+let isTracing = false;
+let traceData = [];
+let startTime;
 
-const tapArea = document.getElementById('tapCircle');
-const statusDisplay = document.getElementById('result');
-
-// 1. Primary Interaction Handler
-tapArea.addEventListener('click', (event) => {
-    if (isRecoveryActive) return;
-
-    const timestamp = Date.now();
-    tapData.push({ time: timestamp, x: event.clientX, y: event.clientY });
-
-    triggerAudioFeedback();
-
-    statusDisplay.innerText = `Interactions: ${tapData.length} / 5`;
-
-    if (tapData.length >= 5) {
-        executeSecurityAnalysis();
-    }
-});
-
-// 2. Behavioral & Rhythmic Analysis Engine
-function executeSecurityAnalysis() {
-    let intervals = [];
-    for (let i = 1; i < tapData.length; i++) {
-        intervals.push(tapData[i].time - tapData[i - 1].time);
-    }
-
-    const averageInterval = intervals.reduce((a, b) => a + b) / intervals.length;
-    const isBotPattern = intervals.every(gap => Math.abs(gap - intervals[0]) < 5);
-    const isVelocityAnomaly = averageInterval < 200;
-
-    if (isBotPattern || isVelocityAnomaly) {
-        initiateMotionRecovery("Pattern Mismatch: Tilt device 30° to Verify");
-    } else {
-        finalizeVerification("Verification Success: Human Confirmed");
-    }
+function initCanvas() {
+    canvas.width = 300;
+    canvas.height = 150;
+    // Draw guide line
+    ctx.strokeStyle = '#334155';
+    ctx.setLineDash([5, 5]);
+    ctx.beginPath();
+    ctx.moveTo(20, 75);
+    ctx.lineTo(280, 75);
+    ctx.stroke();
 }
 
-// 3. Gyroscope-Based Recovery System (The "Unique" Layer)
-function initiateMotionRecovery(message) {
-    isRecoveryActive = true;
-    statusDisplay.innerHTML = `<span style='color:#f97316;'>${message}</span>`;
-
-    // Requesting Permission for iOS 13+ devices
-    if (typeof DeviceOrientationEvent.requestPermission === 'function') {
-        DeviceOrientationEvent.requestPermission()
-            .then(permissionState => {
-                if (permissionState === 'granted') {
-                    activateMotionListener();
-                }
-            })
-            .catch(console.error);
-    } else {
-        activateMotionListener();
-    }
-}
-
-function activateMotionListener() {
-    if (!sensorAttached) {
-        window.addEventListener('deviceorientation', processMotionData);
-        sensorAttached = true;
-    }
-}
-
-// 4. Motion Data Processing (Gamma Tilt Logic)
-function processMotionData(event) {
-    const tiltAngle = event.gamma; // Range: -90 to 90
-
-    if (Math.abs(tiltAngle) > 30) {
-        window.removeEventListener('deviceorientation', processMotionData);
-        sensorAttached = false;
-        isRecoveryActive = false;
-        finalizeVerification("Motion Verified: Proof of Human Effort Established");
-    }
-}
-
-// 5. System Utilities
-function finalizeVerification(message) {
-    statusDisplay.innerHTML = `<span style='color:#22c55e;'>${message}</span>`;
-    resetProtocol(4000);
-}
-
-function resetProtocol(delay) {
+const startVerification = (e) => {
+    isTracing = true;
+    traceData = [];
+    startTime = Date.now();
+    statusMsg.innerText = "Tracing... Keep Steady!";
+    statusMsg.style.color = "#94a3b8";
+    
+    // Change state after 1.5s to test human reflex
     setTimeout(() => {
-        tapData = [];
-        isRecoveryActive = false;
-        statusDisplay.innerText = "System Ready: Waiting for Input";
-    }, delay);
-}
+        if(isTracing) {
+            statusMsg.innerText = "REFLEX TEST: SLOW DOWN!";
+            statusMsg.style.color = "#f59e0b";
+            target.style.background = "#ef4444";
+            target.style.boxShadow = "0 0 20px #ef4444";
+        }
+    }, 1500);
+};
 
-function triggerAudioFeedback() {
-    try {
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        const oscillator = audioCtx.createOscillator();
-        const gainNode = audioCtx.createGain();
-        
-        oscillator.connect(gainNode);
-        gainNode.connect(audioCtx.destination);
-        
-        oscillator.type = 'sine';
-        oscillator.frequency.setValueAtTime(440, audioCtx.currentTime);
-        gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
-        
-        oscillator.start();
-        oscillator.stop(audioCtx.currentTime + 0.05);
-    } catch (e) {
-        console.log("Audio feedback inhibited by browser policy.");
+const trackMovement = (e) => {
+    if (!isTracing) return;
+    const rect = canvas.getBoundingClientRect();
+    const x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+    const y = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top;
+    const currentTime = Date.now() - startTime;
+    
+    if (traceData.length > 0) {
+        const last = traceData[traceData.length - 1];
+        const dist = Math.sqrt(Math.pow(x - last.x, 2) + Math.pow(y - last.y, 2));
+        const dt = currentTime - last.t;
+        const velocity = dist / (dt || 1);
+        traceData.push({ x, y, t: currentTime, v: velocity });
+    } else {
+        traceData.push({ x, y, t: currentTime, v: 0 });
     }
-}
+    target.style.left = `${x - 15}px`;
+    target.style.top = `${y - 15}px`;
+};
+
+const stopVerification = () => {
+    if (!isTracing) return;
+    isTracing = false;
+
+    const normalPhase = traceData.filter(d => d.t < 1500);
+    const reactionPhase = traceData.filter(d => d.t >= 1500 && d.t < 2500);
+
+    const avgV1 = normalPhase.reduce((a, b) => a + b.v, 0) / (normalPhase.length || 1);
+    const avgV2 = reactionPhase.reduce((a, b) => a + b.v, 0) / (reactionPhase.length || 1);
+    const jitter = normalPhase.map(d => Math.abs(d.v - avgV1)).reduce((a, b) => a + b, 0) / (normalPhase.length || 1);
+
+    // AI/Bot Detection Logic
+    const hasReactionDelay = (avgV1 / (avgV2 || 0.1)) < 5; 
+    const hasNaturalJitter = jitter > 0.01; 
+
+    if (hasNaturalJitter && hasReactionDelay && traceData.length > 15) {
+        statusMsg.innerText = "VERIFIED: HUMAN REFLEX DETECTED";
+        statusMsg.style.color = "#22c55e";
+    } else {
+        statusMsg.innerText = "FAILED: BOT-LIKE PRECISION";
+        statusMsg.style.color = "#ef4444";
+    }
+    
+    target.style.background = "#3b82f6";
+    target.style.boxShadow = "0 0 15px #3b82f6";
+};
+
+target.addEventListener('mousedown', startVerification);
+target.addEventListener('touchstart', startVerification);
+window.addEventListener('mousemove', trackMovement);
+window.addEventListener('touchmove', trackMovement);
+window.addEventListener('mouseup', stopVerification);
+window.addEventListener('touchend', stopVerification);
+
+initCanvas();
