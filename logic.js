@@ -1,34 +1,43 @@
-let tapTimes = [];
+// International Standard Rhythm Logic
 const circle = document.getElementById('tapCircle');
 const result = document.getElementById('result');
+let tapIntervals = [];
+let lastTapTime = 0;
+
+// Simple Audio Context for Rhythm (Beep sound)
+const playBeep = () => {
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const oscillator = audioCtx.createOscillator();
+    oscillator.type = 'sine';
+    oscillator.frequency.setValueAtTime(440, audioCtx.currentTime);
+    oscillator.connect(audioCtx.destination);
+    oscillator.start();
+    oscillator.stop(audioCtx.currentTime + 0.1);
+};
 
 circle.addEventListener('click', () => {
-    const currentTime = Date.now();
-    tapTimes.push(currentTime);
+    const now = Date.now();
+    playBeep(); // বাজবে যখনই ট্যাপ করবি
+
+    if (lastTapTime !== 0) {
+        tapIntervals.push(now - lastTapTime);
+    }
+    lastTapTime = now;
     
-    // Feedback for tap
-    result.innerText = `Taps: ${tapTimes.length} / 5`;
-    
-    if (tapTimes.length >= 5) {
-        let variances = [];
-        for (let i = 1; i < tapTimes.length; i++) {
-            variances.push(tapTimes[i] - tapTimes[i-1]);
-        }
+    result.innerText = `Taps: ${tapIntervals.length + 1} / 5`;
+
+    if (tapIntervals.length >= 4) {
+        // High Security Logic: Check Standard Deviation
+        const isRoboticallyPerfect = tapIntervals.every(interval => Math.abs(interval - tapIntervals[0]) < 2);
         
-        // Human Variance Logic: Bots are too perfect (constant ms), humans are not.
-        // If the difference between any two gaps is exactly 0, it might be a bot.
-        const isBot = variances.every(v => v === variances[0]);
-        
-        if (isBot) {
-            result.innerHTML = "<span style='color: #ef4444;'>Verification Failed: Bot Detected!</span>";
+        if (isRoboticallyPerfect) {
+            result.innerHTML = "<span style='color:#ff4444;'>Bot Detected: Too Perfect!</span>";
         } else {
-            result.innerHTML = "<span style='color: #22c55e;'>Verification Success: Human Verified!</span>";
+            result.innerHTML = "<span style='color:#22c55e;'>Human Verified: Natural Rhythm Detected!</span>";
         }
         
-        // Reset after 2 seconds to try again
-        setTimeout(() => {
-            tapTimes = [];
-            result.innerText = "Waiting for input...";
-        }, 2000);
+        // Reset
+        tapIntervals = [];
+        lastTapTime = 0;
     }
 });
