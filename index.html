@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PoHE Protocol | Rhythm Verification</title>
+    <style>
+        body { text-align: center; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #0f172a; color: #f8fafc; padding-top: 50px; }
+        #tapCircle { width: 160px; height: 160px; background: #22c55e; border-radius: 50%; margin: 30px auto; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #000; font-weight: bold; transition: transform 0.1s; box-shadow: 0 0 20px rgba(34, 197, 94, 0.5); }
+        #tapCircle:active { transform: scale(0.95); }
+        #result { margin-top: 20px; font-size: 1.2rem; font-weight: bold; }
+        .instruction { color: #94a3b8; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+    <h1>PoHE Rhythm Verification</h1>
+    <p class="instruction">Tap the circle 5 times in a consistent rhythmic pattern.</p>
+    <div id="tapCircle">TAP HERE</div>
+    <div id="result">Waiting for input...</div>
+    <script src="logic.js"></script>
+</body>
+</html>
